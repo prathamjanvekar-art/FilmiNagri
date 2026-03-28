@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FilmiBeat – Bollywood Ki Dhadkan</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Noto+Sans+Devanagari:wght@400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #e8001c;
+    --gold: #f5a623;
+    --dark: #0d0d0d;
+    --surface: #111;
+    --card: #1a1a1a;
+    --border: #2a2a2a;
+    --text: #f0ebe0;
+    --muted: #888;
+    --accent: #ff4d6d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* BREAKING NEWS TICKER */
+  .ticker-wrap {
+    background: var(--red);
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    z-index: 100;
+  }
+  .ticker-label {
+    display: inline-block;
+    background: #fff;
+    color: var(--red);
+    font-weight: 700;
+    font-size: 11px;
+    padding: 2px 10px;
+    margin-right: 16px;
+    letter-spacing: 1px;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    height: 100%;
+    display: flex;
+    align-items: center;
+  }
+  .ticker-track {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+    padding-left: 130px;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+  .ticker-track span { margin: 0 40px; }
+  @keyframes ticker {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(180deg, #000 0%, var(--surface) 100%);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 999;
+    box-shadow: 0 4px 30px rgba(232,0,28,0.15);
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 40px;
+  }
+  .logo {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    text-decoration: none;
+  }
+  .logo-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .logo-main span { color: var(--red); }
+  .logo-sub {
+    font-family: 'Noto Sans Devanagari', sans-serif;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+  .header-meta {
+    text-align: right;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .header-meta strong { color: var(--gold); display: block; font-size: 12px; }
+
+  nav {
+    background: var(--red);
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  nav a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    white-space: nowrap;
+    transition: background 0.2s;
+    border-right: 1px solid rgba(255,255,255,0.15);
+  }
+  nav a:hover, nav a.active { background: rgba(0,0,0,0.25); }
+
+  /* HERO */
+  .hero {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 1px;
+  }
+  .hero-main {
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .hero-main img {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+    filter: brightness(0.7);
+  }
+  .hero-main:hover img { transform: scale(1.03); filter: brightness(0.85); }
+  .hero-main-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 30px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, transparent 100%);
+  }
+  .badge {
+    display: inline-block;
+    background: var(--red);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+  }
+  .hero-main h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.2;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+  .hero-meta { font-size: 11px; color: #aaa; }
+  .hero-meta span { color: var(--gold); }
+
+  .hero-side { display: flex; flex-direction: column; gap: 1px; background: var(--border); }
+  .hero-card {
+    background: var(--surface);
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  .hero-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.6);
+    transition: transform 0.4s;
+  }
+  .hero-card:hover img { transform: scale(1.05); filter: brightness(0.75); }
+  .hero-card-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 15px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, transparent 100%);
+  }
+  .hero-card h3 { font-size: 13px; font-weight: 700; color: #fff; line-height: 1.3; }
+
+  /* MAIN CONTENT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 900;
+    color: #fff;
+  }
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--red), transparent);
+  }
+  .section-more {
+    font-size: 11px;
+    color: var(--red);
+    text-decoration: none;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+  .article-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, border-color 0.2s;
+    position: relative;
+  }
+  .article-card:hover { transform: translateY(-3px); border-color: var(--red); }
+  .article-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.9);
+    transition: filter 0.3s;
+  }
+  .article-card:hover img { filter: brightness(1); }
+  .card-body { padding: 14px; }
+  .card-cat {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 6px;
+  }
+  .card-title { font-size: 14px; font-weight: 700; line-height: 1.4; color: var(--text); margin-bottom: 8px; }
+  .card-meta { font-size: 10px; color: var(--muted); display: flex; justify-content: space-between; }
+
+  /* TRENDING SIDEBAR */
+  .two-col { display: grid; grid-template-columns: 1fr 320px; gap: 30px; margin-top: 30px; }
+  .trending-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 20px;
+  }
+  .trending-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+  }
+  .trending-item:last-child { border-bottom: none; }
+  .trending-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--border);
+    min-width: 36px;
+    line-height: 1;
+  }
+  .trending-item:hover .trending-num { color: var(--red); }
+  .trending-info h4 { font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--text); margin-bottom: 4px; }
+  .trending-info span { font-size: 10px; color: var(--muted); }
+  .trending-item img { width: 70px; height: 60px; object-fit: cover; flex-shrink: 0; filter: brightness(0.85); }
+
+  /* VIDEO SECTION */
+  .video-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+  }
+  .video-thumb {
+    position: relative;
+    overflow: hidden;
+  }
+  .video-thumb img { width: 100%; height: 150px; object-fit: cover; display: block; }
+  .play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    background: rgba(232,0,28,0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .video-info { padding: 10px 12px; }
+  .video-info h4 { font-size: 12px; font-weight: 600; line-height: 1.3; color: var(--text); }
+
+  /* POLL WIDGET */
+  .poll-box {
+    background: linear-gradient(135deg, #1a0a0a, #0d0d0d);
+    border: 1px solid var(--red);
+    padding: 20px;
+    margin-top: 20px;
+  }
+  .poll-q { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; margin-bottom: 15px; }
+  .poll-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--dark);
+    border: 1px solid var(--border);
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    font-size: 13px;
+  }
+  .poll-option:hover { border-color: var(--red); }
+  .poll-option input { accent-color: var(--red); }
+
+  /* TAGS */
+  .tags-cloud { display: flex; flex-wrap: wrap; gap: 8px; }
+  .tag {
+    font-size: 11px;
+    padding: 5px 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+  .tag:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* FOOTER */
+  footer {
+    background: #000;
+    border-top: 1px solid var(--border);
+    padding: 40px;
+    margin-top: 40px;
+  }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 30px; margin-bottom: 30px; }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: #fff; margin-bottom: 10px; }
+  .footer-logo span { color: var(--red); }
+  .footer-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .footer-col h4 { font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--gold); margin-bottom: 15px; }
+  .footer-col a { display: block; font-size: 12px; color: var(--muted); text-decoration: none; margin-bottom: 8px; transition: color 0.2s; }
+  .footer-col a:hover { color: var(--red); }
+  .footer-bottom { border-top: 1px solid var(--border); padding-top: 20px; display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); }
+  .footer-bottom a { color: var(--muted); text-decoration: none; }
+  .footer-bottom a:hover { color: var(--red); }
+
+  /* API INFO BANNER */
+  .api-banner {
+    background: linear-gradient(90deg, #0a1628, #112244);
+    border: 1px solid #1e3a6e;
+    border-left: 3px solid var(--gold);
+    padding: 12px 20px;
+    margin: 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 12px;
+    color: #7eb3ff;
+  }
+  .api-banner strong { color: var(--gold); }
+  .api-banner code { background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 3px; font-size: 11px; color: #7eb3ff; }
+
+  @media (max-width: 768px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-side { display: none; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .header-top { padding: 12px 16px; }
+    .logo-main { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- BREAKING NEWS -->
+<div class="ticker-wrap">
+  <div class="ticker-label">🔴 BREAKING</div>
+  <div class="ticker-track" id="ticker">
+    <span>🎬 SRK की नई फिल्म का टीज़र रिलीज़ — 10 मिलियन व्यूज़ पहले घंटे में</span>
+    <span>💃 दीपिका पादुकोण Hollywood की बड़ी फिल्म में कास्ट</span>
+    <span>🎵 Arijit Singh का नया गाना "Dil Ka Raaz" — #1 पर ट्रेंडिंग</span>
+    <span>🏆 फिल्मफेयर अवार्ड्स 2025 — विजेताओं की पूरी लिस्ट</span>
+    <span>🌟 सलमान खान की "Tiger 4" — Box Office पर धमाका</span>
+    <span>📸 कंगना रनौत का नया लुक वायरल</span>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-top">
+    <a href="#" class="logo">
+      <div>
+        <div class="logo-main">Filmi<span>Beat</span></div>
+        <div class="logo-sub">बॉलीवुड की धड़कन</div>
+      </div>
+    </a>
+    <div class="header-meta">
+      <strong id="current-date"></strong>
+      <span>Latest Bollywood News 24/7</span>
+    </div>
+  </div>
+  <nav>
+    <a href="#" class="active">होम</a>
+    <a href="#">बॉलीवुड</a>
+    <a href="#">मूवी रिव्यू</a>
+    <a href="#">म्यूजिक</a>
+    <a href="#">सेलेब्स</a>
+    <a href="#">गॉसिप</a>
+    <a href="#">फोटो</a>
+    <a href="#">वीडियो</a>
+    <a href="#">OTT</a>
+    <a href="#">बॉक्स ऑफिस</a>
+    <a href="#">अवार्ड्स</a>
+    <a href="#" style="background:rgba(255,255,255,0.1); margin-left:auto">🔍</a>
+  </nav>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-main">
+    <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=900&h=500&fit=crop" alt="Hero">
+    <div class="hero-main-content">
+      <div class="badge">🔥 एक्सक्लूसिव</div>
+      <h2>Shah Rukh Khan की अगली फिल्म का पहला पोस्टर — फैंस हुए दीवाने, Twitter पर ट्रेंड कर रहा #KingKhanIsBack</h2>
+      <div class="hero-meta">
+        <span>रोहन शर्मा</span> · 2 घंटे पहले · 45K व्यूज़
+      </div>
+    </div>
+  </div>
+  <div class="hero-side">
+    <div class="hero-card">
+      <img src="https://images.unsplash.com/photo-1518834107812-67b0b7c58434?w=400&h=280&fit=crop" alt="">
+      <div class="hero-card-content">
+        <div class="badge" style="font-size:8px;margin-bottom:4px">रिव्यू</div>
+        <h3>Animal Park — 5 स्टार! Ranbir की बेस्ट परफॉर्मेंस कभी</h3>
+      </div>
+    </div>
+    <div class="hero-card">
+      <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=280&fit=crop" alt="">
+      <div class="hero-card-content">
+        <div class="badge" style="font-size:8px;margin-bottom:4px;background:#f5a623">म्यूजिक</div>
+        <h3>Arijit का नया एल्बम — "Dil Ki Baat" आज रात रिलीज़</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTAINER -->
+<div class="container">
+
+  <!-- API BANNER -->
+  <div class="api-banner">
+    <span>⚡</span>
+    <div>
+      <strong>Auto-Publish API Active</strong> — This blog is powered by automated posting.
+      Endpoint: <code>POST /api/v1/posts</code> · Auth: <code>Bearer API_KEY</code>
+      · <a href="admin.html" style="color:var(--gold); text-decoration:none">Admin Panel →</a>
+    </div>
+  </div>
+
+  <!-- LATEST NEWS -->
+  <div class="section-header">
+    <h2 class="section-title">ताज़ा खबरें</h2>
+    <div class="section-line"></div>
+    <a href="#" class="section-more">सभी देखें →</a>
+  </div>
+  <div class="grid-3" id="articles-grid">
+    <!-- Articles loaded dynamically -->
+  </div>
+
+  <!-- TWO COLUMN -->
+  <div class="two-col">
+    <div>
+      <div class="section-header">
+        <h2 class="section-title">मूवी रिव्यू</h2>
+        <div class="section-line"></div>
+        <a href="#" class="section-more">सभी →</a>
+      </div>
+      <div class="grid-4" id="reviews-grid"></div>
+
+      <div class="section-header" style="margin-top:30px">
+        <h2 class="section-title">🎵 म्यूजिक</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="grid-4" id="music-grid"></div>
+    </div>
+
+    <div>
+      <!-- TRENDING -->
+      <div class="section-header">
+        <h2 class="section-title">🔥 Trending</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="trending-box" id="trending-list"></div>
+
+      <!-- POLL -->
+      <div class="poll-box">
+        <div class="badge" style="margin-bottom:10px">POLL</div>
+        <div class="poll-q">2025 की बेस्ट फिल्म कौन सी है?</div>
+        <div class="poll-option"><input type="radio" name="poll" value="1"> Dunki Returns</div>
+        <div class="poll-option"><input type="radio" name="poll" value="2"> Animal Park</div>
+        <div class="poll-option"><input type="radio" name="poll" value="3"> Tiger 4</div>
+        <div class="poll-option"><input type="radio" name="poll" value="4"> Jawan 2</div>
+        <button onclick="votePoll()" style="width:100%;margin-top:10px;background:var(--red);color:#fff;border:none;padding:10px;cursor:pointer;font-weight:700;font-size:12px;letter-spacing:1px">VOTE करें</button>
+        <div id="poll-result" style="font-size:11px;color:var(--muted);margin-top:8px;text-align:center"></div>
+      </div>
+
+      <!-- TAGS -->
+      <div style="margin-top:20px">
+        <div class="section-header">
+          <h2 class="section-title">Tags</h2>
+        </div>
+        <div class="tags-cloud">
+          <a href="#" class="tag">SRK</a><a href="#" class="tag">Salman Khan</a><a href="#" class="tag">Deepika</a>
+          <a href="#" class="tag">Box Office</a><a href="#" class="tag">OTT</a><a href="#" class="tag">Arijit Singh</a>
+          <a href="#" class="tag">Ranbir</a><a href="#" class="tag">Alia Bhatt</a><a href="#" class="tag">Awards</a>
+          <a href="#" class="tag">Gossip</a><a href="#" class="tag">Music Launch</a><a href="#" class="tag">Remake</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEOS -->
+  <div class="section-header" style="margin-top:30px">
+    <h2 class="section-title">📺 वीडियो</h2>
+    <div class="section-line"></div>
+  </div>
+  <div class="grid-4" id="video-grid"></div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Filmi<span>Beat</span></div>
+      <p class="footer-desc">भारत का नंबर 1 बॉलीवुड न्यूज़ पोर्टल। 24/7 लेटेस्ट मूवी, म्यूजिक, गॉसिप और बहुत कुछ। Powered by Auto-Publish API.</p>
+    </div>
+    <div class="footer-col">
+      <h4>सेक्शन</h4>
+      <a href="#">बॉलीवुड</a><a href="#">मूवी रिव्यू</a><a href="#">म्यूजिक</a><a href="#">गॉसिप</a><a href="#">OTT</a>
+    </div>
+    <div class="footer-col">
+      <h4>जानकारी</h4>
+      <a href="#">हमारे बारे में</a><a href="#">संपर्क</a><a href="#">Advertise</a><a href="#">Privacy Policy</a>
+    </div>
+    <div class="footer-col">
+      <h4>Developer</h4>
+      <a href="admin.html">Admin Panel</a>
+      <a href="api-docs.html">API Docs</a>
+      <a href="#">API Keys</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 FilmiBeat. All Rights Reserved. Powered by Auto-Publish API.</span>
+    <div style="display:flex;gap:20px">
+      <a href="#">Privacy</a><a href="#">Terms</a><a href="#">Sitemap</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ---- SAMPLE DATA (replace with API calls) ----
+const POSTS = JSON.parse(localStorage.getItem('fb_posts') || '[]');
+
+const SAMPLE = [
+  { id:1, title:"Katrina Kaif का नया लुक वायरल — फैंस बोले 'इतनी सुंदर!'", cat:"सेलेब्स", time:"1 घंटे पहले", views:"23K", img:"https://images.unsplash.com/photo-1511367461989-f85a21fda167?w=400&h=250&fit=crop" },
+  { id:2, title:"Pathaan 2 की शूटिंग शुरू — Dubai में SRK का फर्स्ट लुक", cat:"बॉलीवुड", time:"3 घंटे पहले", views:"56K", img:"https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=400&h=250&fit=crop" },
+  { id:3, title:"Ranveer Singh का डांस वीडियो — 50 मिलियन व्यूज़ पार", cat:"वायरल", time:"5 घंटे पहले", views:"50M", img:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=250&fit=crop" },
+  { id:4, title:"Brahmastra 2 — Release Date Announce, Ranbir-Alia फिर साथ", cat:"मूवी", time:"6 घंटे पहले", views:"34K", img:"https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&h=250&fit=crop" },
+  { id:5, title:"Priyanka Chopra का बड़ा खुलासा — 'India की याद आती है'", cat:"इंटरव्यू", time:"8 घंटे पहले", views:"18K", img:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=250&fit=crop" },
+  { id:6, title:"Stree 3 की घोषणा — Shraddha Kapoor और Rajkummar Rao वापस", cat:"बॉलीवुड", time:"10 घंटे पहले", views:"29K", img:"https://images.unsplash.com/photo-1574267432553-4b4628081c31?w=400&h=250&fit=crop" },
+];
+
+function renderArticles() {
+  const allPosts = [...POSTS, ...SAMPLE];
+  const grid = document.getElementById('articles-grid');
+  grid.innerHTML = allPosts.slice(0,6).map(p => `
+    <div class="article-card">
+      <img src="${p.img || p.image || 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&h=200&fit=crop'}" alt="${p.title}">
+      <div class="card-body">
+        <div class="card-cat">${p.cat || p.category || 'बॉलीवुड'}</div>
+        <div class="card-title">${p.title}</div>
+        <div class="card-meta"><span>${p.time || p.date || 'अभी'}</span><span>${p.views || '1K'} व्यूज़</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+const REVIEWS = [
+  { title:"Fighter — ⭐⭐⭐⭐", sub:"Action Blockbuster", img:"https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=300&h=180&fit=crop" },
+  { title:"Dunki — ⭐⭐⭐½", sub:"Emotional Drama", img:"https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=300&h=180&fit=crop" },
+  { title:"Jawan 2 — ⭐⭐⭐⭐⭐", sub:"Masterpiece", img:"https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=300&h=180&fit=crop" },
+  { title:"Animal Park — ⭐⭐⭐⭐", sub:"Dark & Intense", img:"https://images.unsplash.com/photo-1542204625-ca960ca44635?w=300&h=180&fit=crop" },
+];
+document.getElementById('reviews-grid').innerHTML = REVIEWS.map(r=>`
+  <div class="article-card">
+    <img src="${r.img}" alt="" style="height:140px">
+    <div class="card-body">
+      <div class="card-cat">रिव्यू</div>
+      <div class="card-title" style="font-size:13px">${r.title}</div>
+      <div class="card-meta">${r.sub}</div>
+    </div>
+  </div>`).join('');
+
+const MUSIC = [
+  { title:"Dil Ka Raaz", art:"Arijit Singh", img:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=180&fit=crop" },
+  { title:"Tere Bin", art:"Vishal-Shekhar", img:"https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&h=180&fit=crop" },
+  { title:"Kesariya 2.0", art:"Pritam", img:"https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=300&h=180&fit=crop" },
+  { title:"Besharam Rang", art:"Vishal & Sheykhar", img:"https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=300&h=180&fit=crop" },
+];
+document.getElementById('music-grid').innerHTML = MUSIC.map(m=>`
+  <div class="article-card">
+    <div class="video-thumb"><img src="${m.img}" alt="" style="height:120px;width:100%"><div class="play-btn">▶</div></div>
+    <div class="card-body">
+      <div class="card-cat">म्यूजिक</div>
+      <div class="card-title" style="font-size:12px">${m.title}</div>
+      <div class="card-meta">${m.art}</div>
+    </div>
+  </div>`).join('');
+
+const TRENDING = [
+  { title:"SRK का 60वां जन्मदिन — बॉलीवुड का सबसे बड़ा जश्न!", cat:"Trending", img:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=100&h=70&fit=crop" },
+  { title:"Deepika और Ranveer का बच्चा — पहली झलक सामने आई", cat:"Celeb", img:"https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=100&h=70&fit=crop" },
+  { title:"Box Office: Tiger 4 ने तोड़े सभी रिकॉर्ड — ₹500 Cr Club", cat:"Box Office", img:"https://images.unsplash.com/photo-1485846234645-a62644f84728?w=100&h=70&fit=crop" },
+  { title:"Alia Bhatt का Hollywood Debut — Netflix की बड़ी फिल्म में", cat:"Hollywood", img:"https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=100&h=70&fit=crop" },
+  { title:"Karan Johar का नया शो — इस बार OTT पर धमाका", cat:"OTT", img:"https://images.unsplash.com/photo-1574267432553-4b4628081c31?w=100&h=70&fit=crop" },
+];
+document.getElementById('trending-list').innerHTML = TRENDING.map((t,i)=>`
+  <div class="trending-item">
+    <div class="trending-num">0${i+1}</div>
+    <div class="trending-info"><h4>${t.title}</h4><span>${t.cat}</span></div>
+    <img src="${t.img}" alt="">
+  </div>`).join('');
+
+const VIDEOS = [
+  { title:"Tiger 4 Trailer REACTION — Salman ने मचाया धमाल!", img:"https://images.unsplash.com/photo-1594909122845-11baa439b7bf?w=300&h=160&fit=crop" },
+  { title:"Deepika का Exclusive Interview — Bollywood से Hollywood तक", img:"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=160&fit=crop" },
+  { title:"Ranveer के साथ 1 घंटे — Uncut मस्ती और जवाब", img:"https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&h=160&fit=crop" },
+  { title:"Arijit Singh LIVE Performance — पूरा कॉन्सर्ट यहाँ देखें", img:"https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=300&h=160&fit=crop" },
+];
+document.getElementById('video-grid').innerHTML = VIDEOS.map(v=>`
+  <div class="video-card">
+    <div class="video-thumb"><img src="${v.img}" alt=""><div class="play-btn">▶</div></div>
+    <div class="video-info"><h4>${v.title}</h4></div>
+  </div>`).join('');
+
+// Date
+const d = new Date();
+document.getElementById('current-date').textContent = d.toLocaleDateString('hi-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+function votePoll(){
+  const sel = document.querySelector('input[name="poll"]:checked');
+  if(!sel){alert('कृपया एक option चुनें!');return;}
+  document.getElementById('poll-result').textContent='✅ आपका वोट दर्ज हो गया! धन्यवाद।';
+}
+
+renderArticles();
+
+// Poll for new posts from local storage (simulate API updates)
+setInterval(renderArticles, 5000);
+</script>
+</body>
+</html>

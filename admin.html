@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FilmiBeat Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0c10; --surface:#111318; --card:#161b22; --border:#21262d;
+    --red:#e8001c; --gold:#f5a623; --blue:#2563eb; --green:#16a34a;
+    --text:#e6edf3; --muted:#7d8590; --danger:#cf222e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;}
+
+  /* LOGIN */
+  #login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;}
+  .login-box{background:var(--card);border:1px solid var(--border);padding:40px;width:380px;text-align:center;}
+  .login-logo{font-size:24px;font-weight:700;margin-bottom:4px;}
+  .login-logo span{color:var(--red);}
+  .login-sub{font-size:12px;color:var(--muted);margin-bottom:30px;}
+  .form-group{margin-bottom:16px;text-align:left;}
+  .form-group label{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.5px;display:block;margin-bottom:6px;}
+  .form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:10px 12px;font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s;}
+  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);}
+  .login-hint{font-size:10px;color:var(--muted);margin-top:12px;}
+  .login-hint code{background:rgba(255,255,255,.05);padding:2px 6px;}
+
+  /* BUTTONS */
+  .btn{padding:9px 18px;font-size:12px;font-weight:600;cursor:pointer;border:none;letter-spacing:.5px;transition:all .2s;display:inline-flex;align-items:center;gap:6px;}
+  .btn-primary{background:var(--red);color:#fff;}
+  .btn-primary:hover{background:#c0001a;}
+  .btn-danger{background:var(--danger);color:#fff;}
+  .btn-danger:hover{background:#b91c1c;}
+  .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border);}
+  .btn-ghost:hover{color:var(--text);border-color:var(--muted);}
+  .btn-full{width:100%;justify-content:center;}
+  .btn-sm{padding:5px 10px;font-size:11px;}
+
+  /* LAYOUT */
+  .layout{display:grid;grid-template-columns:220px 1fr;min-height:100vh;}
+
+  /* SIDEBAR */
+  .sidebar{background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto;}
+  .sidebar-top{padding:16px 20px;border-bottom:1px solid var(--border);}
+
+  /* BACK ARROW */
+  .back-arrow{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;cursor:pointer;padding:8px 10px;border:1px solid var(--border);margin-bottom:14px;transition:all .2s;text-decoration:none;background:var(--bg);}
+  .back-arrow:hover{color:#fff;border-color:var(--muted);background:var(--card);}
+  .back-arrow .arr{font-size:18px;font-weight:700;line-height:1;}
+
+  .sidebar-logo h2{font-size:17px;font-weight:700;}
+  .sidebar-logo h2 span{color:var(--red);}
+  .sidebar-logo p{font-size:10px;color:var(--muted);margin-top:2px;}
+  .sidebar-section{padding:10px 20px 4px;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);}
+  .sidebar-item{display:flex;align-items:center;gap:10px;padding:9px 20px;font-size:13px;color:var(--muted);cursor:pointer;transition:all .15s;border-left:2px solid transparent;}
+  .sidebar-item:hover{background:var(--card);color:var(--text);}
+  .sidebar-item.active{color:var(--text);background:var(--card);border-left-color:var(--red);}
+  .sidebar-badge{background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:auto;}
+  .sidebar-footer{margin-top:auto;padding:14px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);}
+  .dot{width:7px;height:7px;border-radius:50%;background:#22c55e;display:inline-block;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+  /* TOPBAR */
+  .main{overflow-y:auto;}
+  .topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+  .topbar-title{font-size:15px;font-weight:600;}
+  .content{padding:24px;}
+
+  /* STATS */
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px;}
+  .stat-card{background:var(--card);border:1px solid var(--border);padding:16px;}
+  .stat-label{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+  .stat-value{font-size:26px;font-weight:700;line-height:1;}
+  .stat-sub{font-size:10px;color:var(--muted);margin-top:4px;}
+  .c-red .stat-value{color:var(--red);}
+  .c-gold .stat-value{color:var(--gold);}
+  .c-green .stat-value{color:#22c55e;}
+  .c-blue .stat-value{color:#60a5fa;}
+
+  /* PANEL */
+  .panel{background:var(--card);border:1px solid var(--border);margin-bottom:20px;}
+  .panel-header{padding:13px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+  .panel-title{font-size:13px;font-weight:600;}
+  .panel-body{padding:20px;}
+
+  /* TABLE */
+  table{width:100%;border-collapse:collapse;}
+  th{font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--muted);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+  td{padding:10px 12px;font-size:12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:rgba(255,255,255,.02);}
+  .badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:2px;}
+  .badge-pub{background:rgba(22,163,74,.15);color:#4ade80;}
+  .badge-draft{background:rgba(245,166,35,.15);color:var(--gold);}
+
+  /* API KEYS */
+  .key-box{background:var(--bg);border:1px solid var(--border);padding:14px 16px;margin-bottom:10px;display:flex;align-items:flex-start;gap:12px;}
+  .key-name{font-size:12px;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+  .key-val{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--gold);word-break:break-all;}
+  .key-meta{font-size:10px;color:var(--muted);margin-top:5px;}
+  .copy-btn{background:var(--border);color:var(--text);border:none;padding:5px 10px;font-size:11px;cursor:pointer;white-space:nowrap;}
+  .copy-btn:hover{background:#333;}
+  .key-actions{display:flex;flex-direction:column;gap:6px;flex-shrink:0;}
+
+  /* FORM */
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  textarea{resize:vertical;min-height:120px;}
+
+  /* LOG */
+  .log-line{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 0;border-bottom:1px solid var(--border);display:flex;gap:12px;align-items:center;}
+  .log-time{color:var(--muted);font-size:10px;white-space:nowrap;}
+  .ok{color:#4ade80;}
+  .err{color:#f87171;}
+
+  /* PAGES */
+  .page{display:none;}
+  .page.active{display:block;}
+
+  /* CONFIRM MODAL */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:flex;align-items:center;justify-content:center;}
+  .modal{background:var(--card);border:1px solid var(--border);padding:28px;width:340px;text-align:center;}
+  .modal h3{font-size:16px;margin-bottom:10px;}
+  .modal p{font-size:12px;color:var(--muted);margin-bottom:20px;line-height:1.6;}
+  .modal-btns{display:flex;gap:10px;justify-content:center;}
+
+  pre{background:var(--bg);border:1px solid var(--border);padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;overflow-x:auto;line-height:1.6;}
+
+  @media(max-width:768px){
+    .layout{grid-template-columns:1fr;}
+    .sidebar{display:none;}
+    .stats-grid{grid-template-columns:repeat(2,1fr);}
+    .form-row{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Filmi<span>Beat</span> Admin</div>
+    <div class="login-sub">Secure Admin Portal — Authorized Only</div>
+    <div class="form-group"><label>USERNAME</label><input type="text" id="lu" value="admin"></div>
+    <div class="form-group"><label>PASSWORD</label><input type="password" id="lp" value="admin123"></div>
+    <div id="lerr" style="color:#f87171;font-size:11px;margin-bottom:10px;display:none">❌ Wrong credentials</div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">LOGIN →</button>
+    <div class="login-hint">Demo: <code>admin</code> / <code>admin123</code></div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="overlay" id="del-modal" style="display:none">
+  <div class="modal">
+    <h3>🗑️ Delete Post?</h3>
+    <p id="del-msg">Are you sure? This cannot be undone.</p>
+    <div class="modal-btns">
+      <button class="btn btn-ghost" onclick="document.getElementById('del-modal').style.display='none'">Cancel</button>
+      <button class="btn btn-danger" id="del-ok">Yes, Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="layout" id="app" style="display:none">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-top">
+
+      <!-- ← BACK TO BLOG -->
+      <a class="back-arrow" href="index.html">
+        <span class="arr">←</span> Back to Blog
+      </a>
+
+      <div class="sidebar-logo">
+        <h2>Filmi<span>Beat</span></h2>
+        <p>Admin Dashboard v1.0</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section">Overview</div>
+    <div class="sidebar-item active" onclick="go('dashboard',this)">📊 Dashboard</div>
+    <div class="sidebar-section">Content</div>
+    <div class="sidebar-item" onclick="go('posts',this)">📝 All Posts <span class="sidebar-badge" id="post-count">0</span></div>
+    <div class="sidebar-item" onclick="go('new-post',this)">✏️ New Post</div>
+    <div class="sidebar-section">Automation</div>
+    <div class="sidebar-item" onclick="go('api-keys',this)">🔑 API Keys</div>
+    <div class="sidebar-item" onclick="go('api-log',this)">📡 API Log</div>
+    <div class="sidebar-section">Settings</div>
+    <div class="sidebar-item" onclick="go('settings',this)">⚙️ Settings</div>
+
+    <div class="sidebar-footer">
+      <div><span class="dot"></span> System Online</div>
+      <div style="margin-top:4px">Logged in as <strong>admin</strong></div>
+      <div style="margin-top:8px"><span onclick="doLogout()" style="color:var(--red);cursor:pointer">Logout →</span></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="page-title">Dashboard</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="dot"></span>
+        <span style="font-size:11px;color:var(--muted)">API Active</span>
+        <button class="btn btn-primary btn-sm" onclick="go('new-post')">+ New Post</button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- DASHBOARD -->
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card c-red"><div class="stat-label">Total Posts</div><div class="stat-value" id="s-posts">0</div><div class="stat-sub">All time</div></div>
+          <div class="stat-card c-gold"><div class="stat-label">Auto-Published</div><div class="stat-value" id="s-auto">0</div><div class="stat-sub">Via API</div></div>
+          <div class="stat-card c-green"><div class="stat-label">API Calls</div><div class="stat-value" id="s-calls">0</div><div class="stat-sub">Total logged</div></div>
+          <div class="stat-card c-blue"><div class="stat-label">API Keys</div><div class="stat-value" id="s-keys">0</div><div class="stat-sub">Active</div></div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">Recent Posts</span>
+            <span onclick="go('posts')" style="font-size:11px;color:var(--red);cursor:pointer">View All →</span>
+          </div>
+          <div class="panel-body">
+            <table><thead><tr><th>Title</th><th>Category</th><th>Source</th><th>Status</th><th>Date</th><th>Delete</th></tr></thead>
+            <tbody id="dash-posts"></tbody></table>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">📡 Recent API Activity</span></div>
+          <div class="panel-body" id="dash-log"></div>
+        </div>
+      </div>
+
+      <!-- ALL POSTS -->
+      <div class="page" id="page-posts">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">All Posts</span>
+            <input id="search-q" placeholder="🔍 Search..." oninput="renderPosts()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;font-size:12px;width:180px;outline:none;">
+          </div>
+          <div class="panel-body">
+            <table><thead><tr><th>#</th><th>Title</th><th>Category</th><th>Source</th><th>Status</th><th>Date</th><th>Delete</th></tr></thead>
+            <tbody id="posts-tbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEW POST -->
+      <div class="page" id="page-new-post">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">✏️ Create New Post</span></div>
+          <div class="panel-body">
+            <div id="save-msg" style="display:none;background:rgba(22,163,74,.1);border:1px solid #16a34a;padding:10px;margin-bottom:16px;font-size:12px;color:#4ade80">✅ Post published!</div>
+            <div class="form-row">
+              <div class="form-group"><label>TITLE</label><input type="text" id="np-title" placeholder="Post title..."></div>
+              <div class="form-group"><label>CATEGORY</label>
+                <select id="np-cat"><option>बॉलीवुड</option><option>मूवी रिव्यू</option><option>म्यूजिक</option><option>सेलेब्स</option><option>गॉसिप</option><option>OTT</option><option>Box Office</option><option>अवार्ड्स</option><option>वायरल</option></select>
+              </div>
+            </div>
+            <div class="form-group"><label>CONTENT</label><textarea id="np-content" placeholder="Full article content..."></textarea></div>
+            <div class="form-row">
+              <div class="form-group"><label>IMAGE URL</label><input type="url" id="np-img" placeholder="https://example.com/image.jpg"></div>
+              <div class="form-group"><label>TAGS (comma separated)</label><input type="text" id="np-tags" placeholder="SRK, Bollywood"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>AUTHOR</label><input type="text" id="np-author" value="Admin"></div>
+              <div class="form-group"><label>STATUS</label><select id="np-status"><option value="published">Published</option><option value="draft">Draft</option></select></div>
+            </div>
+            <div style="display:flex;gap:10px;margin-top:8px">
+              <button class="btn btn-primary" onclick="savePost()">🚀 Publish Post</button>
+              <button class="btn btn-ghost" onclick="document.getElementById('np-status').value='draft';savePost()">💾 Save Draft</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API KEYS — FULLY INSIDE ADMIN (no separate page) -->
+      <div class="page" id="page-api-keys">
+
+        <!-- KEYS LIST -->
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">🔑 API Keys</span>
+            <button class="btn btn-primary btn-sm" onclick="generateKey()">+ Generate New Key</button>
+          </div>
+          <div class="panel-body">
+            <div style="background:rgba(245,166,35,.07);border:1px solid rgba(245,166,35,.3);padding:11px 14px;margin-bottom:16px;font-size:12px;color:var(--gold);">
+              ⚠️ Keep keys secret. Use in backend/scripts only. Rate limit: <strong>100 requests/hour</strong>.
+            </div>
+            <div id="keys-list"><p style="font-size:12px;color:var(--muted)">No keys yet. Click "+ Generate New Key" above.</p></div>
+          </div>
+        </div>
+
+        <!-- HOW TO USE -->
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">📖 How to Use (No Separate Page Needed)</span></div>
+          <div class="panel-body">
+
+            <p style="font-size:12px;color:var(--muted);margin-bottom:12px">Add this header to every API request:</p>
+            <pre style="margin-bottom:20px"><span style="color:var(--muted)">Authorization: Bearer</span> <span style="color:var(--gold)">YOUR_API_KEY</span></pre>
+
+            <p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">POST — Create a Post (for automation)</p>
+            <pre style="margin-bottom:20px">POST https://yourdomain.com/api/v1/posts
+<span style="color:var(--muted)">{</span>
+  <span style="color:#79c0ff">"title"</span>: <span style="color:#a5d6ff">"SRK Ki Nayi Film!"</span>,
+  <span style="color:#79c0ff">"content"</span>: <span style="color:#a5d6ff">"Full article here..."</span>,
+  <span style="color:#79c0ff">"category"</span>: <span style="color:#a5d6ff">"बॉलीवुड"</span>,
+  <span style="color:#79c0ff">"image"</span>: <span style="color:#a5d6ff">"https://img.jpg"</span>,
+  <span style="color:#79c0ff">"status"</span>: <span style="color:#a5d6ff">"published"</span>
+<span style="color:var(--muted)">}</span></pre>
+
+            <p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Python Example</p>
+            <pre style="margin-bottom:20px"><span style="color:#8b949e">import</span> requests
+API_KEY = <span style="color:#a5d6ff">"fb_live_your_key"</span>
+r = requests.post(<span style="color:#a5d6ff">"https://yourdomain.com/api/v1/posts"</span>,
+    headers={<span style="color:#a5d6ff">"Authorization"</span>: f<span style="color:#a5d6ff">"Bearer {API_KEY}"</span>},
+    json={<span style="color:#a5d6ff">"title"</span>:<span style="color:#a5d6ff">"My Post"</span>,<span style="color:#a5d6ff">"content"</span>:<span style="color:#a5d6ff">"..."</span>,<span style="color:#a5d6ff">"category"</span>:<span style="color:#a5d6ff">"बॉलीवुड"</span>})
+<span style="color:#8b949e">print</span>(r.json())</pre>
+
+            <!-- LIVE TESTER -->
+            <p style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">⚡ Live Tester — Test Your Key Here</p>
+            <div style="background:#050810;border:1px solid #1e3a6e;padding:16px;">
+              <input type="text" id="t-key" placeholder="Paste your API key (fb_live_xxx)..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--gold);padding:9px 12px;font-size:11px;margin-bottom:10px;outline:none;font-family:'JetBrains Mono',monospace;">
+              <input type="text" id="t-title" placeholder="Post title to test..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 12px;font-size:12px;margin-bottom:10px;outline:none;">
+              <select id="t-cat" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:9px 12px;font-size:12px;margin-bottom:10px;outline:none;">
+                <option>बॉलीवुड</option><option>सेलेब्स</option><option>म्यूजिक</option><option>गॉसिप</option><option>OTT</option>
+              </select>
+              <button class="btn btn-primary" onclick="testPost()" style="width:100%;justify-content:center;">🚀 Send Test Request</button>
+              <div id="t-result" style="margin-top:12px;background:#000;border:1px solid var(--border);padding:12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:#4ade80;min-height:50px;white-space:pre-wrap;">// Response appears here...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API LOG -->
+      <div class="page" id="page-api-log">
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">📡 API Request Log</span>
+            <button class="btn btn-ghost btn-sm" onclick="clearLog()">🗑️ Clear</button>
+          </div>
+          <div class="panel-body" id="full-log"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS -->
+      <div class="page" id="page-settings">
+        <div class="panel">
+          <div class="panel-header"><span class="panel-title">⚙️ Settings</span></div>
+          <div class="panel-body">
+            <div class="form-group"><label>BLOG NAME</label><input value="FilmiBeat"></div>
+            <div class="form-group"><label>TAGLINE</label><input value="बॉलीवुड की धड़कन"></div>
+            <div class="form-group"><label>POSTS PER PAGE</label><input type="number" value="20"></div>
+            <div class="form-group"><label>AUTO-APPROVE API POSTS</label>
+              <select><option>Yes — Publish immediately</option><option>No — Require review</option></select>
+            </div>
+            <div class="form-group"><label>RATE LIMIT (requests/hour)</label><input type="number" value="100"></div>
+            <button class="btn btn-primary" onclick="alert('✅ Settings saved!')">Save Settings</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+// AUTH
+document.getElementById('lp').onkeydown = e => { if(e.key==='Enter') doLogin(); };
+function doLogin(){
+  if(document.getElementById('lu').value==='admin' && document.getElementById('lp').value==='admin123'){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='grid';
+    initDash();
+  } else { document.getElementById('lerr').style.display='block'; }
+}
+function doLogout(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+
+// STORAGE
+const GP = () => JSON.parse(localStorage.getItem('fb_posts')||'[]');
+const SP = p => localStorage.setItem('fb_posts', JSON.stringify(p));
+const GK = () => JSON.parse(localStorage.getItem('fb_apikeys')||'[]');
+const SK = k => localStorage.setItem('fb_apikeys', JSON.stringify(k));
+const GL = () => JSON.parse(localStorage.getItem('fb_log')||'[]');
+const AL = e => { const l=GL(); l.unshift({...e,time:new Date().toISOString()}); localStorage.setItem('fb_log',JSON.stringify(l.slice(0,200))); };
+
+// NAV
+const TITLES = {dashboard:'Dashboard',posts:'All Posts','new-post':'New Post','api-keys':'API Keys','api-log':'API Log',settings:'Settings'};
+function go(name, el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  if(el) el.classList.add('active');
+  document.getElementById('page-title').textContent = TITLES[name]||name;
+  if(name==='posts') renderPosts();
+  if(name==='api-keys') renderKeys();
+  if(name==='api-log') renderLog();
+  if(name==='dashboard') initDash();
+}
+
+// DASHBOARD
+function initDash(){
+  const posts=GP(), keys=GK(), log=GL();
+  document.getElementById('s-posts').textContent = posts.length;
+  document.getElementById('s-auto').textContent  = posts.filter(p=>p.source==='api').length;
+  document.getElementById('s-calls').textContent = log.length;
+  document.getElementById('s-keys').textContent  = keys.filter(k=>k.active).length;
+  document.getElementById('post-count').textContent = posts.length;
+
+  document.getElementById('dash-posts').innerHTML = posts.slice(0,5).map(p=>`
+    <tr>
+      <td style="max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</td>
+      <td style="font-size:10px;color:var(--muted)">${p.category||'-'}</td>
+      <td style="font-size:10px;color:${p.source==='api'?'#60a5fa':'var(--muted)'}">${p.source==='api'?'🤖 API':'👤 Admin'}</td>
+      <td><span class="badge badge-${p.status==='draft'?'draft':'pub'}">${p.status||'published'}</span></td>
+      <td style="font-size:10px;color:var(--muted)">${new Date(p.date).toLocaleDateString()}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="askDelete('${p.id}','${esc(p.title)}')">🗑️ Delete</button></td>
+    </tr>`).join('')||'<tr><td colspan="6" style="color:var(--muted);text-align:center;padding:20px;font-size:12px">No posts yet.</td></tr>';
+
+  document.getElementById('dash-log').innerHTML = log.slice(0,6).map(l=>`
+    <div class="log-line">
+      <span class="log-time">${new Date(l.time).toLocaleTimeString()}</span>
+      <span style="color:#60a5fa;font-weight:700">POST</span>
+      <span style="color:var(--gold)">/api/v1/posts</span>
+      <span class="${l.success?'ok':'err'}">${l.success?'201 Created':'401 Error'}</span>
+      <span style="color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.title||'—'}</span>
+    </div>`).join('')||'<p style="font-size:12px;color:var(--muted)">No API activity yet.</p>';
+}
+
+// POSTS TABLE
+function renderPosts(){
+  const q=(document.getElementById('search-q')?.value||'').toLowerCase();
+  const posts=GP().filter(p=>!q||p.title.toLowerCase().includes(q));
+  document.getElementById('posts-tbody').innerHTML=posts.map((p,i)=>`
+    <tr>
+      <td style="color:var(--muted);font-size:10px">${i+1}</td>
+      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</td>
+      <td style="font-size:10px;color:var(--muted)">${p.category||'-'}</td>
+      <td style="font-size:10px;color:${p.source==='api'?'#60a5fa':'var(--muted)'}">${p.source==='api'?'🤖 API':'👤 Admin'}</td>
+      <td><span class="badge badge-${p.status==='draft'?'draft':'pub'}">${p.status||'published'}</span></td>
+      <td style="font-size:10px;color:var(--muted)">${new Date(p.date).toLocaleDateString()}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="askDelete('${p.id}','${esc(p.title)}')">🗑️ Delete</button></td>
+    </tr>`).join('')||'<tr><td colspan="7" style="color:var(--muted);text-align:center;padding:30px;font-size:12px">No posts found.</td></tr>';
+}
+
+// DELETE WITH CONFIRM MODAL
+let delId=null;
+const esc = s => (s||'').replace(/'/g,"&#39;").slice(0,60);
+function askDelete(id,title){
+  delId=id;
+  document.getElementById('del-msg').textContent=`Delete "${title}"? This cannot be undone.`;
+  document.getElementById('del-modal').style.display='flex';
+  document.getElementById('del-ok').onclick=()=>{
+    SP(GP().filter(p=>p.id!==delId));
+    document.getElementById('del-modal').style.display='none';
+    renderPosts(); initDash();
+  };
+}
+
+// NEW POST
+function savePost(){
+  const title=document.getElementById('np-title').value.trim();
+  if(!title){alert('⚠️ Title is required!');return;}
+  const post={
+    id:'post_'+Date.now(), title,
+    content:document.getElementById('np-content').value,
+    category:document.getElementById('np-cat').value,
+    image:document.getElementById('np-img').value||'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&h=250&fit=crop',
+    tags:document.getElementById('np-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    author:document.getElementById('np-author').value||'Admin',
+    status:document.getElementById('np-status').value,
+    source:'admin', date:new Date().toISOString(), time:'अभी', views:'0'
+  };
+  const posts=GP(); posts.unshift(post); SP(posts);
+  AL({success:true,title:post.title,source:'admin'});
+  document.getElementById('save-msg').style.display='block';
+  setTimeout(()=>document.getElementById('save-msg').style.display='none',3000);
+  ['np-title','np-content','np-img','np-tags'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('post-count').textContent=posts.length;
+}
+
+// API KEYS
+function generateKey(){
+  const c='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const raw=Array.from({length:32},()=>c[Math.floor(Math.random()*c.length)]).join('');
+  const k={id:'key_'+Date.now(),key:'fb_live_'+raw,name:'Auto Key '+(GK().length+1),created:new Date().toISOString(),active:true,calls:0};
+  const keys=GK(); keys.push(k); SK(keys); renderKeys();
+}
+function renderKeys(){
+  const keys=GK();
+  const el=document.getElementById('keys-list');
+  if(!keys.length){el.innerHTML='<p style="font-size:12px;color:var(--muted)">No API keys yet. Click "+ Generate New Key" above.</p>';return;}
+  el.innerHTML=keys.map(k=>`
+    <div class="key-box">
+      <div style="flex:1;min-width:0">
+        <div class="key-name">${k.name} ${k.active?'<span style="color:#4ade80;font-size:10px">● Active</span>':'<span style="color:#f87171;font-size:10px">● Revoked</span>'}</div>
+        <div class="key-val">${k.key}</div>
+        <div class="key-meta">Created: ${new Date(k.created).toLocaleDateString()} &nbsp;·&nbsp; Calls: ${k.calls}</div>
+      </div>
+      <div class="key-actions">
+        <button class="copy-btn" onclick="copyKey('${k.key}',this)">📋 Copy</button>
+        ${k.active?`<button class="btn btn-danger btn-sm" onclick="revokeKey('${k.id}')">🗑️ Revoke</button>`:'<span style="font-size:10px;color:var(--muted)">Revoked</span>'}
+      </div>
+    </div>`).join('');
+}
+function copyKey(key,btn){ navigator.clipboard.writeText(key).then(()=>{btn.textContent='✅ Copied!';setTimeout(()=>btn.textContent='📋 Copy',2000);}); }
+function revokeKey(id){ if(!confirm('Revoke this key?')) return; SK(GK().map(k=>k.id===id?{...k,active:false}:k)); renderKeys(); }
+
+// LIVE TESTER
+function testPost(){
+  const key=document.getElementById('t-key').value.trim();
+  const title=document.getElementById('t-title').value.trim();
+  const cat=document.getElementById('t-cat').value;
+  const res=document.getElementById('t-result');
+  if(!key){res.style.color='#f87171';res.textContent='// Error: paste your API key first';return;}
+  if(!title){res.style.color='#f87171';res.textContent='// Error: title is required';return;}
+  res.style.color='#7d8590';res.textContent='// Sending request...';
+  setTimeout(()=>{
+    const keys=GK(), valid=keys.find(k=>k.key===key&&k.active);
+    if(!valid){res.style.color='#f87171';res.textContent=JSON.stringify({success:false,error:'Invalid or revoked API key',status:401},null,2);return;}
+    valid.calls++; SK(keys);
+    const post={id:'post_'+Date.now(),title,category:cat,content:'(Live tester post)',image:'https://images.unsplash.com/photo-1536440136628-849c177e76a1?w=400&h=250&fit=crop',status:'published',source:'api',date:new Date().toISOString(),time:'अभी',views:'0'};
+    const posts=GP(); posts.unshift(post); SP(posts);
+    AL({success:true,title:post.title,source:'live_tester'});
+    document.getElementById('post-count').textContent=posts.length;
+    res.style.color='#4ade80';
+    res.textContent=JSON.stringify({success:true,id:post.id,title:post.title,status:'published',published_at:post.date},null,2);
+  },700);
+}
+
+// LOG
+function renderLog(){
+  const log=GL();
+  document.getElementById('full-log').innerHTML=log.map(l=>`
+    <div class="log-line">
+      <span class="log-time">${new Date(l.time).toLocaleTimeString()}</span>
+      <span style="color:#60a5fa;font-weight:700">POST</span>
+      <span style="color:var(--gold)">/api/v1/posts</span>
+      <span class="${l.success?'ok':'err'}">${l.success?'201 Created':'401 Error'}</span>
+      <span style="color:var(--muted);font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l.title||'—'}</span>
+    </div>`).join('')||'<p style="font-size:12px;color:var(--muted)">No API calls logged yet.</p>';
+}
+function clearLog(){ if(confirm('Clear all logs?')){ localStorage.removeItem('fb_log'); renderLog(); } }
+
+initDash();
+</script>
+</body>
+</html>
